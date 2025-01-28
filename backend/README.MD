@@ -120,8 +120,8 @@ Admin ---> [Analytics Dashboard] ---> Insights
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-repo/api-management-system.git
-   cd api-management-system
+   git clone https://github.com/Rajveer75way/paid-apis.git
+   cd paid-apis/backend 
    ```
 
 2. Install dependencies:
@@ -145,7 +145,7 @@ Admin ---> [Analytics Dashboard] ---> Insights
 
 5. Start the server:
    ```bash
-   npm start
+   npm run local
    ```
 
 ---
