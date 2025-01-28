@@ -7,29 +7,25 @@ import fs from "fs";
 
 // Import rate limiter
 import rateLimit from "express-rate-limit";
-
+import { IUser } from "./app/user/user.dto";
 // Import other necessary modules
 import { AppDataSource } from "./app/common/services/database.service";
 import { loadConfig } from "./app/common/helper/config.hepler";
 import errorHandler from "./app/common/middleware/error-handler.middleware";
 import routes from "./app/routes";
-const swaggerUi = require("swagger-ui-express");
-const expenseSwagger = JSON.parse(fs.readFileSync("./app/swagger/expenses.swagger.json", "utf8"));
-const budgetSwagger = JSON.parse(fs.readFileSync("./app/swagger/budget.swagger.json", "utf8"));
-const financialReportSwager = JSON.parse(fs.readFileSync("./app/swagger/financialReport.swagger.json", "utf8"));
 
-const combinedSwagger = {
-  ...expenseSwagger,
-  paths: {
-    ...expenseSwagger.paths,
-    ...budgetSwagger.paths,
-    ...financialReportSwager.paths,
-  }
-};
+
 
 // Load environment configuration
 loadConfig();
-
+declare global {
+  namespace Express {
+    interface User extends Omit<IUser, "password"> { }
+    interface Request {
+      user?: User;
+    }
+  }
+}
 const port = Number(process.env.PORT) ?? 5000;
 const app: Express = express();
 app.use(cors());
@@ -53,7 +49,7 @@ const initApp = async (): Promise<void> => {
     console.log("Database connected!");
     // Setup routes and swagger documentation
     app.use("/api", routes);
-    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(combinedSwagger));
+    app.use("/api-docs", express.static("docs"));
     // Error handler middleware
     app.use(errorHandler);
     // Start the server

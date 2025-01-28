@@ -7,6 +7,7 @@ import bcrypt from "bcrypt";
 import nodemailer from "nodemailer";
 import { Between } from "typeorm";
 import jwt from "jsonwebtoken";
+import { Plan } from "../plan/plan.schema";
 /**
  * Create a new user, save the user to the database, and send a welcome email.
  * 
@@ -81,30 +82,23 @@ export const loginUser = async (data: { email: string; password: string }) => {
   }
 
   // Define the IUser interface
-  interface IUser {
-    _id: string; // Using id for TypeORM
-    name: string;
-    email: string;
-    active: boolean;
-    role: "USER" | "ADMIN";
-    password: string;
-    createdAt: Date;
-    updatedAt: Date;
-    refreshToken?: string; // Remove `null` to match expected type
-  }
+  
 
   // Exclude the password field
   type IUserWithoutPassword = Omit<IUser, "password">;
 
   const userWithoutPassword: IUserWithoutPassword = {
-    _id: user.id,
+    id: user.id,
     name: user.name,
     email: user.email,
     active: user.active,
-    role: user.role as "USER" | "ADMIN", // Cast the role if needed
+    role: user.role as "USER" | "ADMIN", // Cast the role if necessary
+    balance: user.balance,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
-    refreshToken: user.refreshToken ?? undefined, // Handle null by converting it to undefined
+    apiRequests: user.apiRequests,
+    plan: user.plan,
+    refreshToken: user.refreshToken,
   };
 
   // Generate tokens
@@ -310,14 +304,18 @@ export const refreshToken = async (refreshToken: string) => {
   }
 
   // Create a new set of tokens without the password field
-  const userWithoutPassword = {
-    _id: user.id,
+  const userWithoutPassword: Omit<IUser, "password"> = {
+    id: user.id,
     name: user.name,
     email: user.email,
     active: user.active,
     role: user.role as "USER" | "ADMIN", // Cast the role if necessary
+    balance: user.balance,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
+    plan: user.plan,
+    apiRequests: user.apiRequests,
+    refreshToken: user.refreshToken,
   };
 
   const tokens = createUserTokens(userWithoutPassword);
@@ -331,3 +329,26 @@ export const refreshToken = async (refreshToken: string) => {
     tokens,
   };
 };
+export const subscribeToPlan = async (userId: string, plan: Plan): Promise<User> => {
+  const userRepository = AppDataSource.getRepository(User);
+
+  // Fetch user by ID
+  const user = await userRepository.findOne({ where: { id: userId } });
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  // Deduct the subscription cost from the user's balance
+  if (user.balance < plan.price_per_request) {
+    throw new Error("Insufficient balance to subscribe to this plan.");
+  }
+
+  user.balance -= plan.price_per_request; // Deduct from the user's balance
+
+  // Set the user's plan
+  user.plan = plan;
+
+  // Save and return the updated user
+  return await userRepository.save(user);
+};
+

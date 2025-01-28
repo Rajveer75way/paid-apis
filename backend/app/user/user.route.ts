@@ -8,12 +8,12 @@ const router = Router();
 router
     .post("/login", userValidator.loginUser, catchError, userController.loginUser)
     .post("/", userValidator.createUser, catchError, userController.createUser)
-    .post('/createPassword', userValidator.createUpdatePassword, catchError, userController.createUpdatePassword)
     .post('/registered',
       roleAuth(["ADMIN"]),
       catchError,
       userController.handleGetRegisteredUsers
     )
-    .get("/active-session", roleAuth(['ADMIN']), userController.getActiveUserCount)
     .post('/refresh-token', userController.refreshToken)
+    .post('/subscribe',roleAuth(['USER', 'ADMIN']), catchError, userController.subscribeToPlan)
+    .get('/id', roleAuth(["ADMIN", "USER"]), catchError, userController.getUserById)
 export default router;

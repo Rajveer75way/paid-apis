@@ -9,8 +9,12 @@
     "strictPropertyInitialization": false,
     "outDir": "./dist",
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./",  // Set baseUrl to the root directory
+    "paths": {
+      "@types/*": ["app/types/*"]  // Update the path to be relative to the baseUrl
+    }
   },
-  "include": ["app/**/*", "app/migrations"],
+  "include": ["app/**/*", "app/migrations", "app/types/express.d.ts"],
   "exclude": ["node_modules"]
 }

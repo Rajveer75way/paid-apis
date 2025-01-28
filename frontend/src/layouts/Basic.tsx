@@ -22,7 +22,7 @@ const Basic = () => {
     <Box sx={styles.root}>
       <Navbar />
       <Outlet />
-      <Footer />
+      {/* <Footer /> */}
     </Box>
   );
 };

@@ -6,6 +6,7 @@ import {User} from "./user.schema"; // Use the TypeORM User entity
 import { getRegisteredUsersByDateRange } from "./user.service";
 import { AppDataSource } from "../common/services/database.service";
 import { Between } from "typeorm";
+import  {PlanService} from "../plan/plan.service";
 
 /**
  * @description Create a new user
@@ -64,24 +65,6 @@ export const handleGetRegisteredUsers = async (req: Request, res: Response) => {
   });
 };
 
-/**
- * @description Get count of active users
- * @param {Request} req - The request object
- * @param {Response} res - The response object
- * @returns {Promise<void>} Returns a JSON response with the count of active users
- */
-export const getActiveUserCount = async (req: Request, res: Response) => {
-  try {
-    const activeUserCount = await userService.getActiveUserCount();
-    res.send(
-      createResponse(activeUserCount, "Active user count fetched successfully")
-    );
-  } catch (error) {
-    res
-      .status(500)
-      .send({ message: "Failed to fetch active user count", error: error });
-  }
-};
 
 /**
  * @description Login an existing user
@@ -134,7 +117,12 @@ export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
  * @returns {Promise<void>} Returns a JSON response with the user or an error message
  */
 export const getUserById = asyncHandler(async (req: Request, res: Response) => {
-  const result = await userService.getUserById((req.params.id));
+  const userId = req.user?.id; // Extract userId from the request
+if (!userId) {
+  res.status(400).send(createResponse(null, "User ID is required"));
+  return;
+}
+  const result = await userService.getUserById(userId);
   res.send(createResponse(result));
 });
 
@@ -161,3 +149,26 @@ export const refreshToken = asyncHandler(
     res.send(createResponse(result));
   },
 );
+export const subscribeToPlan = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  const userId = req.user?.id; // Extract userId from the request
+  const { planId } = req.body; // Extract planId from the request body
+  // Ensure both userId and planId are provided
+  if (!userId || !planId) {
+    res.status(400).send(createResponse(null, "User ID and Plan ID are required"));
+    return; // Make sure to stop further execution after sending the response
+  }
+
+  // Fetch the plan by ID
+  const plan = await new PlanService().getPlanById(planId);
+  if (!plan) {
+    res.status(404).send(createResponse(null, "Plan not found"));
+    return;
+  }
+
+  // Subscribe the user to the plan using the UserService
+  const updatedUser = await userService.subscribeToPlan(userId, plan);
+
+  // Return success response
+  res.status(200).send(createResponse(updatedUser, "User subscribed to plan successfully"));
+});
+

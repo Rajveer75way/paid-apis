@@ -2,7 +2,7 @@ import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, ObjectIdColumn, U
 
 export abstract class BaseSchema {
   @ObjectIdColumn()
-  _id: string;
+  id: string;
 
   @CreateDateColumn()
   createdAt: Date;

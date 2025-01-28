@@ -14,22 +14,26 @@ export const roleAuth = (
       if (publicRoutes.includes(req.path)) {
         return next();
       }
+
+      // Extract token from Authorization header
       const token = req.headers.authorization?.replace("Bearer ", "");
       if (!token) {
-        throw createHttpError(401, { message: "Invalid token" });
+        throw createHttpError(401, { message: "Token not provided" });
       }
+
       try {
+        // Verify token and decode user
         const decodedUser = jwt.verify(token, process.env.JWT_SECRET!) as IUser;
-        req.user = decodedUser;  
+        req.user = decodedUser;  // Attach user to the request
         const user = req.user as IUser;
-        if (!user.role || !['ADMIN', 'USER'].includes(user.role)) {
-          throw createHttpError(401, { message: "Invalid user role" });
+
+        // Check if user role exists and is valid
+        if (!user.role || !roles.includes(user.role)) {
+          throw createHttpError(403, { message: "You do not have access to this resource" });
         }
-        if (!roles.includes(user.role)) {
-          const formattedRole = user.role.charAt(0).toUpperCase() + user.role.slice(1).toLowerCase();
-          throw createHttpError(401, { message: `${formattedRole} cannot access this resource` });
-        }
-        next();  
+
+        // Proceed to next middleware or route handler
+        next();
       } catch (error) {
         throw createHttpError(401, { message: "Invalid or expired token" });
       }

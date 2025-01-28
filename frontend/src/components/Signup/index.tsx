@@ -4,7 +4,7 @@ import { TextField, Button, Box, Typography, Grid, Paper } from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { User } from "../../types";
-import { useSignupMutation } from "../../services/api";
+import { useSignupMutation } from "../../services/user-api";
 import { toast } from "react-toastify";
 import { useSpring, animated } from "@react-spring/web"; // Import from react-spring
 import { useNavigate } from "react-router-dom";

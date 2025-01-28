@@ -66,6 +66,9 @@ const Navbar: React.FC = () => {
       <Button color="inherit" component={Link} to="/contact">
         Contact
       </Button>
+      <Button color="inherit" component={Link} to="/profile">
+        Profile
+      </Button>
 
       {/* Conditionally Render Login/Logout Button */}
       {isLoggedIn ? (
@@ -94,6 +97,9 @@ const Navbar: React.FC = () => {
       </ListItem>
       <ListItem button component={Link} to="/contact">
         <ListItemText primary="Contact" />
+      </ListItem>
+      <ListItem button component={Link} to="/profile">
+        <ListItemText primary="Profile" />
       </ListItem>
       <Divider />
       <ListItem button>

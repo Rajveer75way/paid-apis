@@ -1,9 +1,12 @@
-import { Entity, Column, BeforeInsert, BeforeUpdate, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column, BeforeInsert, BeforeUpdate, ManyToOne,
+  OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import bcrypt from "bcrypt";
+import { Plan } from "../plan/plan.schema";
+import { ApiRequest } from "../api-request/apiRequest.schema";
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Column()
@@ -20,6 +23,16 @@ export class User {
 
   @Column()
   password: string;
+
+  @ManyToOne(() => Plan, (plan) => plan.users)
+  plan!: Plan;
+
+  @Column("decimal", { default: 0 })
+  balance!: number;
+
+  @OneToMany(() => ApiRequest, (apiRequest) => apiRequest.user)
+  apiRequests!: ApiRequest[];
+
 
   @Column({ type: "text", nullable: true })  
   refreshToken: string | null;

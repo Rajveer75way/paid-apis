@@ -16,10 +16,10 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <BrowserRouter>
       <Provider store={store}>
         <ThemeProvider theme={theme}>
-          <ErrorBoundary>
+          {/* <ErrorBoundary> */}
             <ToastContainer />
             <App />
-          </ErrorBoundary>
+          {/* </ErrorBoundary> */}
         </ThemeProvider>
       </Provider>
     </BrowserRouter>

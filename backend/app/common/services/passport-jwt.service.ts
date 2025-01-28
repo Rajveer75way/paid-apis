@@ -62,7 +62,6 @@ export const initPassport = (): void => {
             return;
           }
           const { password: _p, ...result } = user;
-          done(null, result, { message: "Logged in Successfully" });
         } catch (error: any) {
           done(createError(500, error.message));
         }
@@ -76,13 +75,13 @@ export const createUserTokens = (user: Omit<IUser, "password">) => {
   const refreshTokenSecret = process.env.JWT_REFRESH_SECRET ?? "";
   // Generate the access token (short-lived)
   const accessToken = jwt.sign(
-    { userId: user._id, email: user.email, role: user.role },  // Use id here
+    { id: user.id, email: user.email, role: user.role },  // Use id here
     jwtSecret,
     { expiresIn: "15m" } // Access token expires in 15 minutes
   );
   // Generate the refresh token (longer-lived)
   const refreshToken = jwt.sign(
-    { userId: user._id },  // Use id here
+    { id: user.id },  // Use id here
     refreshTokenSecret,
     { expiresIn: "7d" } // Refresh token expires in 7 days
   );

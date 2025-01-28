@@ -1,0 +1,248 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "User Plan and API Management",
+      "description": "APIs for managing user plans and API requests",
+      "version": "1.0.0"
+    },
+    "paths": {
+      "/api/plans": {
+        "get": {
+          "summary": "Get all plans",
+          "operationId": "getPlans",
+          "tags": ["Plans"],
+          "responses": {
+            "200": {
+              "description": "A list of plans",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Plan"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/plans/{planId}": {
+        "get": {
+          "summary": "Get a plan by ID",
+          "operationId": "getPlanById",
+          "tags": ["Plans"],
+          "parameters": [
+            {
+              "name": "planId",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Plan details",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Plan"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Plan not found"
+            }
+          }
+        }
+      },
+      "/api/apis": {
+        "post": {
+          "summary": "Create a new API",
+          "operationId": "createApi",
+          "tags": ["APIs"],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateApiRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "API created successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Api"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request"
+            }
+          }
+        }
+      },
+      "/api/apis/{apiId}/requests": {
+        "get": {
+          "summary": "Get API requests",
+          "operationId": "getApiRequests",
+          "tags": ["APIs"],
+          "parameters": [
+            {
+              "name": "apiId",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "API request data",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ApiRequest"
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "API not found"
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "Plan": {
+          "type": "object",
+          "properties": {
+            "plan_id": {
+              "type": "string",
+              "example": "plan_001"
+            },
+            "plan_name": {
+              "type": "string",
+              "example": "Basic Plan"
+            },
+            "price_per_request": {
+              "type": "number",
+              "example": 50
+            },
+            "description": {
+              "type": "string",
+              "example": "Basic API plan with limited access."
+            }
+          }
+        },
+        "CreateApiRequest": {
+          "type": "object",
+          "properties": {
+            "api_name": {
+              "type": "string",
+              "example": "Example API"
+            },
+            "description": {
+              "type": "string",
+              "example": "This is an example API."
+            },
+            "planId": {
+              "type": "string",
+              "example": "plan_001"
+            },
+            "module": {
+              "type": "string",
+              "example": "user"
+            },
+            "price_per_request": {
+              "type": "number",
+              "example": 70
+            },
+            "is_free": {
+              "type": "boolean",
+              "example": false
+            }
+          },
+          "required": [
+            "api_name",
+            "description",
+            "planId",
+            "module",
+            "price_per_request",
+            "is_free"
+          ]
+        },
+        "Api": {
+          "type": "object",
+          "properties": {
+            "api_id": {
+              "type": "string",
+              "example": "api_123"
+            },
+            "api_name": {
+              "type": "string",
+              "example": "Example API"
+            },
+            "description": {
+              "type": "string",
+              "example": "This is an example API."
+            },
+            "plan_id": {
+              "type": "string",
+              "example": "plan_001"
+            },
+            "module": {
+              "type": "string",
+              "example": "user"
+            },
+            "price_per_request": {
+              "type": "number",
+              "example": 70
+            },
+            "is_free": {
+              "type": "boolean",
+              "example": false
+            }
+          }
+        },
+        "ApiRequest": {
+          "type": "object",
+          "properties": {
+            "request_id": {
+              "type": "string",
+              "example": "req_001"
+            },
+            "api_id": {
+              "type": "string",
+              "example": "api_123"
+            },
+            "timestamp": {
+              "type": "string",
+              "example": "2025-01-28T14:00:00Z"
+            },
+            "request_count": {
+              "type": "integer",
+              "example": 100
+            }
+          }
+        }
+      }
+    }
+  }
+  

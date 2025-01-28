@@ -1,16 +1,18 @@
 import { DataSource } from "typeorm";
-import { Expense } from "../../expenses/expenses.schema";
-import { Budget } from "../../budget/budget.schema";
+// import { Expense } from "../../api-request/apiRequest.schema";
+// import { Budget } from "../../plan/plan.schema";
 import { User } from "../../user/user.schema";
-
+import { Plan } from "../../plan/plan.schema";
+import { Api } from "../../api/api.schema";
+import { ApiRequest } from "../../api-request/apiRequest.schema";
 export const AppDataSource = new DataSource({
   type: "postgres",
   host: process.env.DB_HOST ?? "",
   port: parseInt(process.env.DB_PORT || "5433", 10), // Changed default port to 5432 (PostgreSQL default)
   username: process.env.DB_USERNAME ?? "postgres",
   password: process.env.DB_PASSWORD ?? "user",
-  database: process.env.DB_DATABASE ?? "test5",
-  entities: [Expense, Budget, User], // Make sure these schemas are correct and exported
+  database: process.env.DB_DATABASE ?? "paid-apis",
+  entities: [ User, Plan, Api, ApiRequest ], // Make sure these schemas are correct and exported
   synchronize: true, // Use migrations for production
   migrations: ["app/migrations/*.ts"], // Ensure the path matches your migration files
 });
